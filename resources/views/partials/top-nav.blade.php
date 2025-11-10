@@ -166,7 +166,7 @@
             <nav class="hidden md:block om-nav">
                 <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px]">
                    
-                    <li><a href="#" class="om-link">Sobreee mi</a></li>
+                    <li><a href="#" class="om-link">Sobre mi</a></li>
                     <li><a href="#" class="om-link">Blog personal</a></li>
                     <li><a href="#" class="om-link">Videos</a></li>
                     <li><a href="#" class="om-link">Noticias</a></li>
