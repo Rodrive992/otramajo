@@ -166,7 +166,7 @@
             <nav class="hidden md:block om-nav">
                 <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px]">
                    
-                    <li><a href="#" class="om-link">Sobre mi</a></li>
+                    <li><a href="{{ route('Sobre-mi')}}" class="om-link">Sobre mi</a></li>
                     <li><a href="#" class="om-link">Blog personal</a></li>
                     <li><a href="#" class="om-link">Videos</a></li>
                     <li><a href="#" class="om-link">Noticias</a></li>
@@ -197,7 +197,7 @@
         </div>
         <div class="mobile-menu-content">
             
-            <a href="#" class="mobile-menu-link">Sobre mi</a>
+            <a href="{{ route('Sobre-mi')}}" class="mobile-menu-link">Sobre mi</a>
             <a href="#" class="mobile-menu-link">Blog personal</a>
             <a href="#" class="mobile-menu-link">Videos</a>
             <a href="#" class="mobile-menu-link">Noticias</a>
