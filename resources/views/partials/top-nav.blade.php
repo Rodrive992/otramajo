@@ -47,6 +47,94 @@
     /* Hover suave del logo */
     img[alt="OtraMajo"] { transition: transform .25s ease; }
     img[alt="OtraMajo"]:hover { transform: scale(1.03); }
+
+    /* Estilos mejorados para menú móvil */
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .mobile-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-menu-container {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: white;
+        z-index: 999;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-menu-container.active {
+        right: 0;
+    }
+
+    .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        background: var(--om-salvia);
+    }
+
+    .mobile-menu-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--om-carbon);
+    }
+
+    .mobile-menu-content {
+        padding: 1rem;
+    }
+
+    .mobile-menu-link {
+        display: block;
+        padding: 0.75rem 0;
+        color: var(--om-carbon);
+        text-decoration: none;
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-menu-link:hover {
+        color: var(--om-rosa);
+        padding-left: 0.5rem;
+    }
+
+    .mobile-menu-link:last-child {
+        border-bottom: none;
+    }
+
+    .mobile-menu-trigger {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.6);
+        transition: background 0.2s ease;
+    }
+
+    .mobile-menu-trigger:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
 </style>
 
 <header class="site-header fixed top-0 inset-x-0 z-50">
@@ -77,8 +165,8 @@
             {{-- Navegación escritorio --}}
             <nav class="hidden md:block om-nav">
                 <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px]">
-                    <li><a href="#" class="om-link">Hola</a></li>
-                    <li><a href="#" class="om-link">Sobre mi</a></li>
+                   
+                    <li><a href="#" class="om-link">Sobreee mi</a></li>
                     <li><a href="#" class="om-link">Blog personal</a></li>
                     <li><a href="#" class="om-link">Videos</a></li>
                     <li><a href="#" class="om-link">Noticias</a></li>
@@ -89,25 +177,66 @@
                 </ul>
             </nav>
 
-            {{-- Menú móvil --}}
+            {{-- Menú móvil mejorado --}}
             <div class="md:hidden">
-                <details>
-                    <summary class="cursor-pointer px-3 py-2 rounded-md bg-white/60 hover:bg-white/80">
-                        <i class="fa-solid fa-bars"></i>
-                    </summary>
-                    <div class="mt-2 bg-white rounded-lg shadow p-3 om-nav text-sm">
-                        <a href="#" class="block py-1 om-link">Hola</a>
-                        <a href="#" class="block py-1 om-link">Sobre mi</a>
-                        <a href="#" class="block py-1 om-link">Blog personal</a>
-                        <a href="#" class="block py-1 om-link">Videos</a>
-                        <a href="#" class="block py-1 om-link">Noticias</a>
-                        <a href="#" class="block py-1 om-link">Preguntas frecuentes</a>
-                        <a href="#" class="block py-1 om-link">Encuestas</a>
-                        <a href="#" class="block py-1 om-link">Resultados</a>
-                        <a href="#" class="block py-1 om-link">Contacto</a>
-                    </div>
-                </details>
+                <button class="mobile-menu-trigger" id="mobileMenuTrigger">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
             </div>
         </div>
     </div>
+
+    {{-- Menú móvil desplegable --}}
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-container" id="mobileMenuContainer">
+        <div class="mobile-menu-header">
+            <h3 class="font-semibold text-lg">Menú</h3>
+            <button class="mobile-menu-close" id="mobileMenuClose">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-content">
+            
+            <a href="#" class="mobile-menu-link">Sobre mi</a>
+            <a href="#" class="mobile-menu-link">Blog personal</a>
+            <a href="#" class="mobile-menu-link">Videos</a>
+            <a href="#" class="mobile-menu-link">Noticias</a>
+            <a href="#" class="mobile-menu-link">Preguntas frecuentes</a>
+            <a href="#" class="mobile-menu-link">Encuestas</a>
+            <a href="#" class="mobile-menu-link">Resultados</a>
+            <a href="#" class="mobile-menu-link">Contacto</a>
+        </div>
+    </div>
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuTrigger = document.getElementById('mobileMenuTrigger');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        
+        // Abrir menú
+        mobileMenuTrigger.addEventListener('click', function() {
+            mobileMenuOverlay.classList.add('active');
+            mobileMenuContainer.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        });
+        
+        // Cerrar menú
+        function closeMobileMenu() {
+            mobileMenuOverlay.classList.remove('active');
+            mobileMenuContainer.classList.remove('active');
+            document.body.style.overflow = ''; // Restaurar scroll del body
+        }
+        
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        
+        // Cerrar menú al hacer clic en un enlace
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    });
+</script>
