@@ -60,7 +60,7 @@
     /* Tarjeta principal mejorada */
     .hero-card {
         background: rgba(250, 249, 246, 0.92);
-        backdrop-filter: blur(20px) saturate(180%);
+        backdrop-filter: blur(10px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         border: 1px solid rgba(255, 255, 255, 0.8);
         border-radius: 2rem;
@@ -351,7 +351,7 @@
                             <span class="group-hover:translate-x-1 transition-transform duration-300">Conoce mi historia</span>
                             <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform duration-300"></i>
                         </a>
-                        <a href="#blog" class="om-btn om-btn-secondary text-lg px-8 py-4 group">
+                        <a href="{{ route('Blog')}}" class="om-btn om-btn-secondary text-lg px-8 py-4 group">
                             <span class="group-hover:translate-x-1 transition-transform duration-300">Leer el blog</span>
                             <i class="fas fa-book-open group-hover:scale-110 transition-transform duration-300"></i>
                         </a>

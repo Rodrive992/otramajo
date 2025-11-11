@@ -5,7 +5,7 @@
 @section('content')
 <style>
     :root{
-        --om-blanco:#FAF9F6; --om-salvia:#A8C3A0; --om-rosa:#E9C7C1;
+        --om-blanco:#FAF9F6; --om-salvia:#A8C3A0; --om-rosa:#D4A8A1;
         --om-gris-claro:#D3D3D3; --om-arena:#F4E1A1; --om-carbon:#4A4A4A;
     }
     body{ background: var(--om-blanco); color: var(--om-carbon); }
@@ -266,7 +266,7 @@
                             </p>
                         </div>
 
-                        <h3 class="om-brand text-2xl mb-6 mt-10 text-[color:var(--om-rosa)]">Mi Vida Antes del ACV</h3>
+                        <h3 class="om-brand text-2xl mb-6 mt-10 text-[#C9796B]">Mi Vida Antes del ACV</h3>
                         
                         <p class="text-lg leading-relaxed mb-6">
                             Para comprender mi presente necesito contarles un poco de cómo era mi vida antes del ACV. Porque nada empezó de cero aquel día: había una historia, una forma de vivir, un ritmo de trabajo, afectos y una vida que también formaron parte de mí, aunque hoy la mire desde otro lugar.
@@ -299,7 +299,7 @@
                                     <p class="text-sm opacity-80">Educación Superior</p>
                                 </div>
                                 <div class="timeline-item">
-                                    <h5 class="font-semibold">Licenciatura en Educación Superior</h5>
+                                    <h5 class="font-semibold">Licenciatura en Ciencias de la Educación Superior</h5>
                                     <p class="mt-2">En este camino nació mi vocación por la docencia</p>
                                 </div>
                                 <div class="timeline-item">
@@ -309,7 +309,7 @@
                             </div>
                         </div>
 
-                        <h3 class="om-brand text-2xl mb-6 mt-12 text-[color:var(--om-arena)]">Mi Ritmo y Pasiones</h3>
+                        <h3 class="om-brand text-2xl mb-6 mt-12 text-[#D1B55C]">Mi Ritmo y Pasiones</h3>
                         
                         <p class="text-lg leading-relaxed mb-6">
                             Mi cabeza siempre estaba llena de proyectos y pendientes. Mis días solían comenzar temprano y terminar tarde, entre clases, reuniones, compromisos y tareas. Descansaba poco, sentía que todo tenía que hacerlo ya, sin pausas, como si el tiempo se me escapara.
@@ -320,7 +320,7 @@
                         </p>
 
                         <div class="bg-[color:var(--om-salvia)]/10 p-6 rounded-xl border border-[color:var(--om-salvia)]/20 mt-8">
-                            <h4 class="om-brand text-xl mb-4 text-[color:var(--om-salvia)]">Mi Gran Pasión: Viajar</h4>
+                            <h4 class="om-brand text-xl mb-4 text-[#96BD8C]">Mi Gran Pasión: Viajar</h4>
                             <p class="text-lg leading-relaxed">
                                 No hablo únicamente de grandes viajes, sino de escapadas cortas, de momentos en los que uno se permite cambiar de ambiente, respirar otro aire y mirar la vida desde otro lugar.
                             </p>
