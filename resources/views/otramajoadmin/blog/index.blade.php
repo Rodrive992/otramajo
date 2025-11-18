@@ -34,6 +34,7 @@ body{ background: var(--om-blanco); color: var(--om-carbon); }
         <table class="table">
             <thead>
                 <tr>
+                    <th>Orden</th>
                     <th>Título</th>
                     <th>Fecha</th>
                     <th>Estado</th>
@@ -43,6 +44,7 @@ body{ background: var(--om-blanco); color: var(--om-carbon); }
             <tbody>
             @forelse($articulos as $a)
                 <tr>
+                    <td>{{ $a->orden_articulos }}</td>
                     <td>{{ $a->titulo }}</td>
                     <td>{{ \Carbon\Carbon::parse($a->fecha_publicacion)->format('Y-m-d') }}</td>
                     <td><span class="badge">{{ $a->estado }}</span></td>

@@ -13,7 +13,7 @@ body{ background: var(--om-blanco); color: var(--om-carbon); }
     background:#fff; border:1px solid var(--om-gris-claro); border-radius:1rem; padding:1.25rem;
 }
 label{ font-size:.9rem; opacity:.9; }
-input[type="text"], input[type="date"], input[type="file"], textarea, select{
+input[type="text"], input[type="date"], input[type="file"], input[type="number"], textarea, select{
     width:100%; border:1px solid #d1d5db; border-radius:.6rem; padding:.6rem .75rem; background:#fff;
 }
 </style>
@@ -61,13 +61,20 @@ input[type="text"], input[type="date"], input[type="file"], textarea, select{
                 <textarea name="conclusion" rows="3">{{ old('conclusion',$articulo->conclusion) }}</textarea>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="mb-4">
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="mb-4 md:col-span-1">
+                    <label>Orden del artículo (opcional)</label>
+                    <input type="number" name="orden_articulos"
+                           value="{{ old('orden_articulos', $articulo->orden_articulos) }}"
+                           min="1" step="1"
+                           placeholder="Ej: 1">
+                </div>
+                <div class="mb-4 md:col-span-1">
                     <label>Fecha de publicación</label>
                     <input type="date" name="fecha_publicacion"
                            value="{{ old('fecha_publicacion', optional($articulo->fecha_publicacion)->format('Y-m-d')) }}" required>
                 </div>
-                <div class="mb-4">
+                <div class="mb-4 md:col-span-1">
                     <label>Estado</label>
                     <select name="estado" required>
                         @php $estado = old('estado',$articulo->estado ?: 'borrador'); @endphp
@@ -75,7 +82,7 @@ input[type="text"], input[type="date"], input[type="file"], textarea, select{
                         <option value="publicado" {{ $estado==='publicado'? 'selected':'' }}>publicado</option>
                     </select>
                 </div>
-                <div class="mb-4">
+                <div class="mb-4 md:col-span-1">
                     <label>Imagen de portada (opcional)</label>
                     <input type="file" name="imagen_portada" accept=".jpg,.jpeg,.png,.webp">
                 </div>

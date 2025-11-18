@@ -21,7 +21,6 @@
         background: linear-gradient(135deg, var(--om-blanco) 0%, var(--om-rosa)/10 100%);
     }
 
-    /* Elementos flotantes de fondo */
     .floating-element {
         position: absolute;
         border-radius: 50%;
@@ -29,7 +28,6 @@
         z-index: 0;
         pointer-events: none;
     }
-
     .floating-1 {
         width: 120px;
         height: 120px;
@@ -38,7 +36,6 @@
         left: 8%;
         animation: float 8s ease-in-out infinite;
     }
-
     .floating-2 {
         width: 80px;
         height: 80px;
@@ -47,7 +44,6 @@
         right: 10%;
         animation: float 6s ease-in-out infinite reverse;
     }
-
     .floating-3 {
         width: 100px;
         height: 100px;
@@ -62,7 +58,6 @@
         50% { transform: translateY(-20px) rotate(180deg); }
     }
 
-    /* Tarjetas mejoradas */
     .card-post{
         background: var(--om-blanco);
         border: 1px solid var(--om-gris-claro);
@@ -91,7 +86,6 @@
         object-fit: cover;
         transition: transform 0.4s ease;
     }
-
     .card-post:hover .card-img {
         transform: scale(1.08);
     }
@@ -99,6 +93,15 @@
     .card-body{ 
         padding: 1.5rem 1.5rem 1.75rem; 
         position: relative; 
+    }
+
+    /* Número de orden */
+    .order-num{
+        font-size: 1.50rem;
+        font-weight: 600;
+        color: var(--om-carbon);
+        opacity: 0.8;
+        margin-bottom: 0.25rem;
     }
 
     .chip-date{
@@ -128,7 +131,6 @@
         margin-bottom: 1.25rem;
     }
 
-    /* Banda de presentación mejorada */
     .hero-band{
         background: linear-gradient(135deg, var(--om-rosa) 0%, var(--om-arena) 100%);
         border: 1px solid rgba(212, 168, 161, 0.3);
@@ -165,7 +167,6 @@
         opacity: 0.9;
     }
 
-    /* Botón Leer más mejorado */
     .read-more-btn {
         display: inline-flex;
         align-items: center;
@@ -189,7 +190,6 @@
         border-color: var(--om-salvia);
     }
 
-    /* Paginación personalizada */
     .pagination-container {
         background: var(--om-blanco);
         border: 1px solid var(--om-gris-claro);
@@ -229,7 +229,6 @@
 
 <main class="pt-header">
     <section class="about-section py-14">
-        {{-- Elementos flotantes de fondo --}}
         <div class="floating-element floating-1"></div>
         <div class="floating-element floating-2"></div>
         <div class="floating-element floating-3"></div>
@@ -266,6 +265,9 @@
                             <img class="card-img" src="{{ $src }}" alt="Portada {{ $post->titulo }}">
                         </a>
                         <div class="card-body">
+                            @if($post->orden_articulos)
+                                <div class="order-num">#{{ $post->orden_articulos }}</div>
+                            @endif
                             <span class="chip-date">{{ $fecha }}</span>
                             <h3 class="card-title">
                                 <a href="{{ route('blog.show', $post->id) }}" class="hover:text-[color:var(--om-salvia)] transition-colors">

@@ -19,6 +19,7 @@ class BlogArticulo extends Model
         'cuerpo',
         'conclusion',
         'imagen_portada',
+        'orden_articulos',
         'fecha_publicacion',
         'estado',
     ];
