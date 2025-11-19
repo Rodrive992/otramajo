@@ -88,15 +88,67 @@ input[type="text"], input[type="date"], input[type="file"], input[type="number"]
                 </div>
             </div>
 
-            @if($mode==='edit' && $articulo->imagen_portada)
+            {{-- BLOQUE IMÁGENES SECUNDARIAS --}}
+            <div class="grid md:grid-cols-3 gap-4 mt-4">
                 <div class="mb-4">
-                    <label class="block mb-1">Imagen actual</label>
-                    <img src="{{ asset('storage/'.$articulo->imagen_portada) }}" alt="actual" class="max-h-40 rounded border">
-                    <label class="inline-flex items-center gap-2 mt-2">
-                        <input type="checkbox" name="limpiar_imagen" value="1">
-                        <span>Eliminar imagen</span>
-                    </label>
+                    <label>Imagen secundaria 1 (opcional)</label>
+                    <input type="file" name="imagen_secundaria1" accept=".jpg,.jpeg,.png,.webp">
                 </div>
+                <div class="mb-4">
+                    <label>Imagen secundaria 2 (opcional)</label>
+                    <input type="file" name="imagen_secundaria2" accept=".jpg,.jpeg,.png,.webp">
+                </div>
+                <div class="mb-4">
+                    <label>Imagen secundaria 3 (opcional)</label>
+                    <input type="file" name="imagen_secundaria3" accept=".jpg,.jpeg,.png,.webp">
+                </div>
+            </div>
+
+            {{-- PREVISUALIZACIÓN DE IMÁGENES EXISTENTES EN MODO EDICIÓN --}}
+            @if($mode==='edit')
+                @if($articulo->imagen_portada)
+                    <div class="mb-4">
+                        <label class="block mb-1">Imagen de portada actual</label>
+                        <img src="{{ asset('storage/'.$articulo->imagen_portada) }}" alt="Portada actual" class="max-h-40 rounded border">
+                        <label class="inline-flex items-center gap-2 mt-2">
+                            <input type="checkbox" name="limpiar_imagen" value="1">
+                            <span>Eliminar imagen de portada</span>
+                        </label>
+                    </div>
+                @endif
+
+                @if($articulo->imagen_secundaria1)
+                    <div class="mb-4">
+                        <label class="block mb-1">Imagen secundaria 1 actual</label>
+                        <img src="{{ asset('storage/'.$articulo->imagen_secundaria1) }}" alt="Secundaria 1 actual" class="max-h-40 rounded border">
+                        <label class="inline-flex items-center gap-2 mt-2">
+                            <input type="checkbox" name="limpiar_imagen_secundaria1" value="1">
+                            <span>Eliminar imagen secundaria 1</span>
+                        </label>
+                    </div>
+                @endif
+
+                @if($articulo->imagen_secundaria2)
+                    <div class="mb-4">
+                        <label class="block mb-1">Imagen secundaria 2 actual</label>
+                        <img src="{{ asset('storage/'.$articulo->imagen_secundaria2) }}" alt="Secundaria 2 actual" class="max-h-40 rounded border">
+                        <label class="inline-flex items-center gap-2 mt-2">
+                            <input type="checkbox" name="limpiar_imagen_secundaria2" value="1">
+                            <span>Eliminar imagen secundaria 2</span>
+                        </label>
+                    </div>
+                @endif
+
+                @if($articulo->imagen_secundaria3)
+                    <div class="mb-4">
+                        <label class="block mb-1">Imagen secundaria 3 actual</label>
+                        <img src="{{ asset('storage/'.$articulo->imagen_secundaria3) }}" alt="Secundaria 3 actual" class="max-h-40 rounded border">
+                        <label class="inline-flex items-center gap-2 mt-2">
+                            <input type="checkbox" name="limpiar_imagen_secundaria3" value="1">
+                            <span>Eliminar imagen secundaria 3</span>
+                        </label>
+                    </div>
+                @endif
             @endif
 
             <div class="mt-6 flex items-center gap-3">
@@ -109,3 +161,4 @@ input[type="text"], input[type="date"], input[type="file"], input[type="number"]
     </div>
 </div>
 @endsection
+

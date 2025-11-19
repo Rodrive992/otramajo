@@ -43,11 +43,26 @@ class AdminBlogArticuloController extends Controller
                 'min:1',
                 Rule::unique('blog_articulos', 'orden_articulos'),
             ],
-            'imagen_portada'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_portada'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria1'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria2'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria3'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        // Portada
         if ($request->hasFile('imagen_portada')) {
             $data['imagen_portada'] = $request->file('imagen_portada')->store('blog', 'public');
+        }
+
+        // Secundarias
+        if ($request->hasFile('imagen_secundaria1')) {
+            $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
+        }
+        if ($request->hasFile('imagen_secundaria2')) {
+            $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
+        }
+        if ($request->hasFile('imagen_secundaria3')) {
+            $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
         }
 
         BlogArticulo::create($data);
@@ -81,10 +96,17 @@ class AdminBlogArticuloController extends Controller
                 'min:1',
                 Rule::unique('blog_articulos', 'orden_articulos')->ignore($articulo->id),
             ],
-            'imagen_portada'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'limpiar_imagen'    => ['nullable', 'boolean'],
+            'imagen_portada'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria1'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria2'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'imagen_secundaria3'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'limpiar_imagen'                => ['nullable', 'boolean'],
+            'limpiar_imagen_secundaria1'    => ['nullable', 'boolean'],
+            'limpiar_imagen_secundaria2'    => ['nullable', 'boolean'],
+            'limpiar_imagen_secundaria3'    => ['nullable', 'boolean'],
         ]);
 
+        /* -------- PORTADA -------- */
         if ($request->boolean('limpiar_imagen')) {
             if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
                 Storage::disk('public')->delete($articulo->imagen_portada);
@@ -99,6 +121,51 @@ class AdminBlogArticuloController extends Controller
             unset($data['imagen_portada']);
         }
 
+        /* -------- SECUNDARIA 1 -------- */
+        if ($request->boolean('limpiar_imagen_secundaria1')) {
+            if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria1);
+            }
+            $data['imagen_secundaria1'] = null;
+        } elseif ($request->hasFile('imagen_secundaria1')) {
+            if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria1);
+            }
+            $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
+        } else {
+            unset($data['imagen_secundaria1']);
+        }
+
+        /* -------- SECUNDARIA 2 -------- */
+        if ($request->boolean('limpiar_imagen_secundaria2')) {
+            if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria2);
+            }
+            $data['imagen_secundaria2'] = null;
+        } elseif ($request->hasFile('imagen_secundaria2')) {
+            if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria2);
+            }
+            $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
+        } else {
+            unset($data['imagen_secundaria2']);
+        }
+
+        /* -------- SECUNDARIA 3 -------- */
+        if ($request->boolean('limpiar_imagen_secundaria3')) {
+            if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria3);
+            }
+            $data['imagen_secundaria3'] = null;
+        } elseif ($request->hasFile('imagen_secundaria3')) {
+            if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
+                Storage::disk('public')->delete($articulo->imagen_secundaria3);
+            }
+            $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
+        } else {
+            unset($data['imagen_secundaria3']);
+        }
+
         $articulo->update($data);
 
         return redirect()->route('otramajoadmin.blog.index')->with('ok', 'Artículo actualizado.');
@@ -107,9 +174,21 @@ class AdminBlogArticuloController extends Controller
     public function destroy($id)
     {
         $articulo = BlogArticulo::findOrFail($id);
-        if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
-            Storage::disk('public')->delete($articulo->imagen_portada);
+
+        // Borrado físico de todas las imágenes asociadas
+        $imagenes = [
+            $articulo->imagen_portada,
+            $articulo->imagen_secundaria1,
+            $articulo->imagen_secundaria2,
+            $articulo->imagen_secundaria3,
+        ];
+
+        foreach ($imagenes as $img) {
+            if ($img && Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
+            }
         }
+
         $articulo->delete();
 
         return back()->with('ok', 'Artículo eliminado.');

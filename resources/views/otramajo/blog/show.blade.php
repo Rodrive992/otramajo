@@ -15,14 +15,14 @@
     .om-brand{ font-family:"Cormorant Garamond", serif; }
     .om-nav{ font-family:"Quicksand", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 
-    /* Estilos específicos para Artículo */
     .article-section {
         position: relative;
         overflow: hidden;
         padding: 3rem 0;
     }
 
-    .photo-frame {
+    .photo-frame,
+    .photo-frame-inline {
         position: relative;
         border-radius: 1.5rem;
         overflow: hidden;
@@ -30,10 +30,19 @@
         transition: all 0.4s ease;
         background: var(--om-blanco);
         border: 1px solid var(--om-gris-claro);
+    }
+
+    .photo-frame {
         height: 500px;
     }
 
-    .photo-frame::before {
+    .photo-frame-inline {
+        height: 360px;
+        margin-top: 2rem;
+    }
+
+    .photo-frame::before,
+    .photo-frame-inline::before {
         content: '';
         position: absolute;
         top: -2px;
@@ -46,7 +55,8 @@
         opacity: 0.7;
     }
 
-    .photo-frame::after {
+    .photo-frame::after,
+    .photo-frame-inline::after {
         content: '';
         position: absolute;
         top: 8px;
@@ -59,19 +69,22 @@
         z-index: 2;
     }
 
-    .photo-frame:hover {
+    .photo-frame:hover,
+    .photo-frame-inline:hover {
         transform: translateY(-5px);
         box-shadow: 0 25px 50px rgba(0,0,0,0.15);
     }
 
-    .photo-frame img {
+    .photo-frame img,
+    .photo-frame-inline img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.4s ease;
     }
 
-    .photo-frame:hover img {
+    .photo-frame:hover img,
+    .photo-frame-inline:hover img {
         transform: scale(1.05);
     }
 
@@ -217,39 +230,40 @@
         word-break: break-word;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         .text-content {
             padding: 2rem 1.5rem;
         }
-        
+
         .photo-frame {
             margin-bottom: 2rem;
             height: 300px;
         }
-        
+
+        .photo-frame-inline {
+            height: 260px;
+        }
+
         .floating-element {
             display: none;
         }
-        
+
         .pt-header {
             padding-top: 120px;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .photo-frame, .floating-element {
+        .photo-frame, .photo-frame-inline, .floating-element {
             animation: none !important;
             transform: none !important;
         }
     }
 </style>
 
-{{-- Header fijo (top) --}}
 @include('partials.top-nav')
 
 <main class="pt-header">
-    {{-- HERO ARTÍCULO --}}
     <section class="article-section bg-gradient-to-br from-[color:var(--om-blanco)] to-[color:var(--om-rosa)]/20">
         <div class="floating-element floating-1"></div>
         <div class="floating-element floating-2"></div>
@@ -269,9 +283,9 @@
                 </div>
             </div>
 
-            {{-- Contenido Principal - Texto a la izquierda, imagen a la derecha --}}
+            {{-- Contenido Principal: texto (2 col) – portada (1 col) --}}
             <div class="grid lg:grid-cols-3 gap-12 items-start">
-                {{-- Columna Izquierda - Texto Principal --}}
+                {{-- Columna texto --}}
                 <div class="lg:col-span-2">
                     <div class="text-content section-fade-in">
                         <article class="article-body prose max-w-none">
@@ -281,12 +295,37 @@
                                 </div>
                             @endif
 
-                            {{-- Cuerpo del artículo --}}
+                            {{-- Imagen secundaria 2 debajo de la descripción --}}
+                            @if ($articulo->imagen_secundaria2)
+                                @php
+                                    $img2 = $articulo->imagen_secundaria2;
+                                    $isUrl2 = $img2 && \Illuminate\Support\Str::startsWith($img2, ['http://', 'https://']);
+                                    $src2 = $isUrl2 ? $img2 : asset('storage/' . $img2);
+                                @endphp
+                                <div class="photo-frame-inline">
+                                    <img src="{{ $src2 }}" alt="Imagen secundaria 2 {{ $articulo->titulo }}">
+                                </div>
+                            @endif
+
+                            {{-- Cuerpo --}}
                             {!! $articulo->cuerpo !!}
 
+                            {{-- Conclusión --}}
                             @if ($articulo->conclusion)
                                 <div class="conclusion">
                                     <strong>Cierre:</strong> {{ $articulo->conclusion }}
+                                </div>
+                            @endif
+
+                            {{-- Imagen secundaria 3 debajo de la conclusión --}}
+                            @if ($articulo->imagen_secundaria3)
+                                @php
+                                    $img3 = $articulo->imagen_secundaria3;
+                                    $isUrl3 = $img3 && \Illuminate\Support\Str::startsWith($img3, ['http://', 'https://']);
+                                    $src3 = $isUrl3 ? $img3 : asset('storage/' . $img3);
+                                @endphp
+                                <div class="photo-frame-inline">
+                                    <img src="{{ $src3 }}" alt="Imagen secundaria 3 {{ $articulo->titulo }}">
                                 </div>
                             @endif
                         </article>
@@ -303,20 +342,32 @@
                     </div>
                 </div>
 
-                {{-- Columna Derecha - Imagen --}}
+                {{-- Columna derecha: portada + secundaria1 debajo --}}
+                @php
+                    $img = $articulo->imagen_portada;
+                    $isUrl = $img && \Illuminate\Support\Str::startsWith($img, ['http://', 'https://']);
+                    $src = $isUrl ? $img : ($img ? asset('storage/' . $img) : asset('images/placeholder-om.jpg'));
+                @endphp
                 <div class="lg:col-span-1">
-                    @php
-                        $img = $articulo->imagen_portada;
-                        $isUrl = $img && Str::startsWith($img, ['http://', 'https://']);
-                        $src = $isUrl ? $img : ($img ? asset('storage/' . $img) : asset('images/placeholder-om.jpg'));
-                    @endphp
                     <div class="photo-frame sticky top-24">
                         <img src="{{ $src }}" alt="Portada {{ $articulo->titulo }}" class="w-full h-full object-cover">
                     </div>
+
+                    {{-- Imagen secundaria 1 debajo de la portada --}}
+                    @if ($articulo->imagen_secundaria1)
+                        @php
+                            $img1 = $articulo->imagen_secundaria1;
+                            $isUrl1 = $img1 && \Illuminate\Support\Str::startsWith($img1, ['http://', 'https://']);
+                            $src1 = $isUrl1 ? $img1 : asset('storage/' . $img1);
+                        @endphp
+                        <div class="photo-frame-inline">
+                            <img src="{{ $src1 }}" alt="Imagen secundaria 1 {{ $articulo->titulo }}">
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            {{-- Artículos Relacionados --}}
+            {{-- Artículos relacionados --}}
             @if (isset($relacionados) && $relacionados->isNotEmpty())
                 <div class="mt-16">
                     <div class="text-center mb-8">
@@ -327,7 +378,7 @@
                         @foreach ($relacionados as $r)
                             @php
                                 $rimg = $r->imagen_portada;
-                                $rurl = $rimg && Str::startsWith($rimg, ['http://', 'https://'])
+                                $rurl = $rimg && \Illuminate\Support\Str::startsWith($rimg, ['http://', 'https://'])
                                     ? $rimg
                                     : ($rimg ? asset('storage/' . $rimg) : asset('images/placeholder-om.jpg'));
                                 $rfecha = \Carbon\Carbon::parse($r->fecha_publicacion)
@@ -356,14 +407,12 @@
     </section>
 </main>
 
-{{-- Footer (bottom) --}}
 @include('partials.bottom-nav')
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Animación de aparición de secciones
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -381,7 +430,6 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(section);
     });
 
-    // Smooth scroll para navegación interna
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -397,3 +445,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
+
