@@ -50,4 +50,5 @@ Route::prefix('otramajoadmin')->middleware('auth')->group(function () {
     Route::get('/blog/{id}/editar', [AdminBlogArticuloController::class, 'edit'])->name('otramajoadmin.blog.edit');
     Route::put('/blog/{id}',    [AdminBlogArticuloController::class, 'update'])->name('otramajoadmin.blog.update');
     Route::delete('/blog/{id}', [AdminBlogArticuloController::class, 'destroy'])->name('otramajoadmin.blog.destroy');
+    Route::get('/blog/{id}', function ($id) { return redirect()->route('otramajoadmin.blog.edit', $id); })->name('otramajoadmin.blog.show');
 });
