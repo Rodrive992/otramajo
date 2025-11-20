@@ -48,4 +48,9 @@ class BlogArticulo extends Model
     {
         return substr(strip_tags($this->descripcion), 0, 120) . '...';
     }
+    public function comentarios()
+    {
+        return $this->hasMany(BlogComentario::class, 'blog_articulo_id')
+                    ->orderByDesc('fecha_comentario');
+    }
 }

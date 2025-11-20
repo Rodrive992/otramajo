@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogArticuloController;
 use App\Http\Controllers\OtraMajoAuthController;
 use App\Http\Controllers\OtraMajoAdminController;
 use App\Http\Controllers\AdminBlogArticuloController;
+use App\Http\Controllers\BlogComentarioController;
 
 Route::get('/', function () {
     return view('otramajo.index');
@@ -23,6 +24,11 @@ Route::get('/blog', [BlogArticuloController::class, 'index'])->name('blog.index'
 Route::get('/blog/{articulo}', [BlogArticuloController::class, 'show'])
     ->whereNumber('articulo')
     ->name('blog.show');
+
+// Guardar comentario
+Route::post('/blog/{articulo}/comentar', [BlogComentarioController::class, 'store'])
+    ->whereNumber('articulo')
+    ->name('blog.comentar');
 
 // ---------- Auth (solo para OtramaJoAdmin) ----------
 Route::get('/otramajoadmin/login', [OtramaJoAuthController::class, 'showLogin'])
@@ -50,5 +56,6 @@ Route::prefix('otramajoadmin')->middleware('auth')->group(function () {
     Route::get('/blog/{id}/editar', [AdminBlogArticuloController::class, 'edit'])->name('otramajoadmin.blog.edit');
     Route::put('/blog/{id}',    [AdminBlogArticuloController::class, 'update'])->name('otramajoadmin.blog.update');
     Route::delete('/blog/{id}', [AdminBlogArticuloController::class, 'destroy'])->name('otramajoadmin.blog.destroy');
-    Route::get('/blog/{id}', function ($id) { return redirect()->route('otramajoadmin.blog.edit', $id); })->name('otramajoadmin.blog.show');
+    Route::get('/blog/{id}', function ($id) { return redirect()->route('otramajoadmin.blog.edit', $id);
+    })->name('otramajoadmin.blog.show');
 });

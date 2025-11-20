@@ -230,6 +230,23 @@
         word-break: break-word;
     }
 
+    /* Inputs comentarios */
+    .om-input, .om-textarea{
+        width: 100%;
+        border-radius: .75rem;
+        border: 1px solid var(--om-gris-claro);
+        padding: .6rem .75rem;
+        background: #fff;
+        font-size: .95rem;
+    }
+
+    .om-label{
+        display:block;
+        font-size:.9rem;
+        opacity:.9;
+        margin-bottom:.25rem;
+    }
+
     @media (max-width: 768px) {
         .text-content {
             padding: 2rem 1.5rem;
@@ -288,6 +305,24 @@
                 {{-- Columna texto --}}
                 <div class="lg:col-span-2">
                     <div class="text-content section-fade-in">
+                        {{-- Errores de validación (comentarios) --}}
+                        @if ($errors->any())
+                            <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
+                                <ul class="list-disc ml-5">
+                                    @foreach ($errors->all() as $e)
+                                        <li>{{ $e }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        {{-- Mensaje OK comentarios --}}
+                        @if(session('ok'))
+                            <div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
+                                {{ session('ok') }}
+                            </div>
+                        @endif
+
                         <article class="article-body prose max-w-none">
                             @if ($articulo->descripcion)
                                 <div class="highlight-text">
@@ -330,12 +365,79 @@
                             @endif
                         </article>
 
+                        {{-- SECCIÓN COMENTARIOS --}}
+                        <div class="mt-10 border-t border-[color:var(--om-gris-claro)] pt-8">
+                            {{-- Listado de comentarios --}}
+                            @if($articulo->comentarios->isNotEmpty())
+                                <h3 class="om-brand text-3xl mb-4">Comentarios</h3>
+                                <div class="om-sep mb-6"></div>
+
+                                @foreach ($articulo->comentarios as $coment)
+                                    <div class="mb-6 border border-[color:var(--om-gris-claro)] rounded-xl p-4 bg-white shadow-sm">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <strong>{{ $coment->nombre_usuario }}</strong>
+                                            @if($coment->fecha_comentario)
+                                                <span class="text-xs opacity-60">
+                                                    {{ $coment->fecha_comentario->format('d/m/Y H:i') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <p class="leading-relaxed text-sm">{{ $coment->comentario }}</p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <h3 class="om-brand text-3xl mb-2">Comentarios</h3>
+                                <p class="text-sm opacity-70 mb-4">
+                                    Aún no hay comentarios. ¡Sé la primera persona en comentar esta entrada!
+                                </p>
+                            @endif
+
+                            {{-- Formulario para comentar --}}
+                            <div class="mt-6">
+                                <h4 class="om-brand text-2xl mb-3">Dejá tu comentario</h4>
+                                <form action="{{ route('blog.comentar', $articulo->id) }}" method="POST" class="space-y-4">
+                                    @csrf
+
+                                    <div>
+                                        <label class="om-label">Nombre</label>
+                                        <input type="text"
+                                               name="nombre_usuario"
+                                               class="om-input"
+                                               required
+                                               value="{{ old('nombre_usuario') }}">
+                                    </div>
+
+                                    <div>
+                                        <label class="om-label">Correo electrónico</label>
+                                        <input type="email"
+                                               name="correo_electronico"
+                                               class="om-input"
+                                               required
+                                               value="{{ old('correo_electronico') }}">
+                                    </div>
+
+                                    <div>
+                                        <label class="om-label">Comentario</label>
+                                        <textarea name="comentario"
+                                                  rows="4"
+                                                  class="om-textarea"
+                                                  required>{{ old('comentario') }}</textarea>
+                                    </div>
+
+                                    <button type="submit"
+                                            class="px-4 py-2 border rounded-lg bg-white hover:bg-gray-50">
+                                        Enviar comentario
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
                         {{-- Botón Volver --}}
                         <div class="text-center mt-8">
                             <a href="{{ route('blog.index') }}" class="back-button">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                                </svg>
+                                    </svg>
                                 Volver
                             </a>
                         </div>
@@ -445,4 +547,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-
