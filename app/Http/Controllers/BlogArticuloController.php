@@ -12,8 +12,7 @@ class BlogArticuloController extends Controller
     public function index()
     {
         $articulos = BlogArticulo::publicado()
-            ->orderByDesc('fecha_publicacion')
-            ->orderByDesc('id')
+            ->orderBy('orden_articulos', 'asc')
             ->paginate(9);
 
         return view('otramajo.blog.index', compact('articulos'));

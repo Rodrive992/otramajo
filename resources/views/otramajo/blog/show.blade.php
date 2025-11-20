@@ -322,7 +322,14 @@
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {{-- Título y fecha --}}
                 <div class="text-center mb-12">
-                    <h1 class="om-brand text-4xl md:text-5xl lg:text-6xl font-semibold mb-6">{{ $articulo->titulo }}</h1>
+                    <h1 class="om-brand text-4xl md:text-5xl lg:text-6xl font-semibold mb-6">
+                        @if ($articulo->orden_articulos)
+                            <span class="opacity-60 mr-2">
+                                #{{ str_pad($articulo->orden_articulos, 2, '0', STR_PAD_LEFT) }}
+                            </span>
+                        @endif
+                        {{ $articulo->titulo }}
+                    </h1>
                     <div class="om-sep max-w-md mx-auto"></div>
                     <div class="mt-6">
                         @php
@@ -533,7 +540,14 @@
                                     </div>
                                     <div class="p-4">
                                         <div class="text-sm opacity-70 mb-2">{{ $rfecha }}</div>
-                                        <h4 class="font-semibold text-lg mb-2 line-clamp-2">{{ $r->titulo }}</h4>
+                                        <h4 class="font-semibold text-lg mb-2 line-clamp-2">
+                                            @if ($r->orden_articulos)
+                                                <span class="opacity-60 mr-1">
+                                                    #{{ str_pad($r->orden_articulos, 2, '0', STR_PAD_LEFT) }}
+                                                </span>
+                                            @endif
+                                            {{ $r->titulo }}
+                                        </h4>
                                         <div class="opacity-80 text-sm line-clamp-3">
                                             {{ \Illuminate\Support\Str::limit(strip_tags($r->descripcion), 120) }}
                                         </div>
