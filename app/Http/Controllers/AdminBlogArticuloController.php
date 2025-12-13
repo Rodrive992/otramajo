@@ -227,22 +227,36 @@ class AdminBlogArticuloController extends Controller
     {
         $articulo = BlogArticulo::findOrFail($id);
 
-        // Borrado físico de todas las imágenes asociadas
-        $imagenes = [
-            $articulo->imagen_portada,
-            $articulo->imagen_secundaria1,
-            $articulo->imagen_secundaria2,
-            $articulo->imagen_secundaria3,
-        ];
+        return DB::transaction(function () use ($articulo) {
 
-        foreach ($imagenes as $img) {
-            if ($img && Storage::disk('public')->exists($img)) {
-                Storage::disk('public')->delete($img);
+            $oldOrden = $articulo->orden_articulos ? (int)$articulo->orden_articulos : null;
+
+            // 1) Borrado físico de todas las imágenes asociadas
+            $imagenes = [
+                $articulo->imagen_portada,
+                $articulo->imagen_secundaria1,
+                $articulo->imagen_secundaria2,
+                $articulo->imagen_secundaria3,
+            ];
+
+            foreach ($imagenes as $img) {
+                if ($img && Storage::disk('public')->exists($img)) {
+                    Storage::disk('public')->delete($img);
+                }
             }
-        }
 
-        $articulo->delete();
+            // 2) Eliminar el registro
+            $articulo->delete();
 
-        return back()->with('ok', 'Artículo eliminado.');
+            // 3) Si tenía orden, cerrar el hueco: todos los > oldOrden bajan 1
+            if ($oldOrden !== null) {
+                BlogArticulo::whereNotNull('orden_articulos')
+                    ->where('orden_articulos', '>', $oldOrden)
+                    ->lockForUpdate()
+                    ->decrement('orden_articulos', 1);
+            }
+
+            return back()->with('ok', 'Artículo eliminado.');
+        });
     }
 }
