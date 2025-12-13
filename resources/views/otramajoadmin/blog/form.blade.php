@@ -78,17 +78,17 @@
 
                 <div class="mb-4">
                     <label>Descripción (resumen)</label>
-                    <textarea name="descripcion" rows="3" required>{{ old('descripcion', $articulo->descripcion) }}</textarea>
+                    <textarea name="descripcion" id="editor-descripcion" rows="3">{{ old('descripcion', $articulo->descripcion) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label>Cuerpo (HTML permitido)</label>
-                    <textarea name="cuerpo" id="editor-cuerpo" rows="10">{{ old('cuerpo', $articulo->cuerpo) }}</textarea>
+                    <<textarea name="cuerpo" id="editor-cuerpo" rows="10">{{ old('cuerpo', $articulo->cuerpo) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label>Conclusión (opcional)</label>
-                    <textarea name="conclusion" rows="3">{{ old('conclusion', $articulo->conclusion) }}</textarea>
+                    <textarea name="conclusion" id="editor-conclusion" rows="3">{{ old('conclusion', $articulo->conclusion) }}</textarea>
                 </div>
 
                 <div class="grid md:grid-cols-4 gap-4">
@@ -197,19 +197,59 @@
     @push('scripts')
         <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
         <script>
-            ClassicEditor
-                .create(document.querySelector('#editor-cuerpo'), {
-                    toolbar: [
-                        'undo', 'redo',
-                        'bold', 'italic', 'underline',
-                        'bulletedList', 'numberedList',
-                        'link', 'blockQuote',
-                        'alignment:left', 'alignment:center', 'alignment:right'
-                    ],
-                })
-                .catch(error => {
-                    console.error(error);
+            const editors = {};
+
+            function initEditor(selector, toolbar, key) {
+                const el = document.querySelector(selector);
+                if (!el) return;
+
+                ClassicEditor
+                    .create(el, {
+                        toolbar
+                    })
+                    .then(editor => {
+                        editors[key] = editor;
+                    })
+                    .catch(error => console.error('CKEditor error en ' + selector, error));
+            }
+
+            const toolbarCompleto = [
+                'undo', 'redo',
+                'bold', 'italic', 'underline',
+                'bulletedList', 'numberedList',
+                'link', 'blockQuote',
+                'alignment:left', 'alignment:center', 'alignment:right'
+            ];
+
+            const toolbarCompacto = [
+                'undo', 'redo',
+                'bold', 'italic', 'underline',
+                'bulletedList', 'numberedList',
+                'link'
+            ];
+
+            initEditor('#editor-cuerpo', toolbarCompleto, 'cuerpo');
+            initEditor('#editor-descripcion', toolbarCompacto, 'descripcion');
+            initEditor('#editor-conclusion', toolbarCompacto, 'conclusion');
+
+            // Validación antes de enviar (evita el bug del required + textarea oculto)
+            document.addEventListener('DOMContentLoaded', () => {
+                const form = document.querySelector('form[enctype="multipart/form-data"]');
+                if (!form) return;
+
+                form.addEventListener('submit', (e) => {
+                    const desc = editors.descripcion ? editors.descripcion.getData().trim() : '';
+
+                    // Si descripcion está vacía (o solo tiene <p>&nbsp;</p>, etc.)
+                    const descText = desc.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+                    if (!descText) {
+                        e.preventDefault();
+                        alert('La descripción es obligatoria.');
+                        if (editors.descripcion) editors.descripcion.editing.view.focus();
+                        return false;
+                    }
                 });
+            });
         </script>
     @endpush
 @endsection

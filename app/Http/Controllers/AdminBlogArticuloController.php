@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlogArticulo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class AdminBlogArticuloController extends Controller
@@ -37,38 +38,46 @@ class AdminBlogArticuloController extends Controller
             'conclusion'        => ['nullable', 'string'],
             'fecha_publicacion' => ['required', 'date'],
             'estado'            => ['required', 'in:publicado,borrador'],
-            'orden_articulos'   => [
-                'nullable',
-                'integer',
-                'min:1',
-                Rule::unique('blog_articulos', 'orden_articulos'),
-            ],
+            'orden_articulos'   => ['nullable', 'integer', 'min:1'], // <- sin unique
             'imagen_portada'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'imagen_secundaria1'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'imagen_secundaria2'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'imagen_secundaria3'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
-        // Portada
-        if ($request->hasFile('imagen_portada')) {
-            $data['imagen_portada'] = $request->file('imagen_portada')->store('blog', 'public');
-        }
+        return DB::transaction(function () use ($request, $data) {
 
-        // Secundarias
-        if ($request->hasFile('imagen_secundaria1')) {
-            $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
-        }
-        if ($request->hasFile('imagen_secundaria2')) {
-            $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
-        }
-        if ($request->hasFile('imagen_secundaria3')) {
-            $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
-        }
+            // Si vino orden, "insertar" en ese lugar: correr los >= orden
+            if (!empty($data['orden_articulos'])) {
+                $orden = (int) $data['orden_articulos'];
 
-        BlogArticulo::create($data);
+                BlogArticulo::whereNotNull('orden_articulos')
+                    ->where('orden_articulos', '>=', $orden)
+                    ->lockForUpdate()
+                    ->increment('orden_articulos', 1);
+            }
 
-        return redirect()->route('otramajoadmin.blog.index')->with('ok', 'Artículo creado correctamente.');
+            // Portada
+            if ($request->hasFile('imagen_portada')) {
+                $data['imagen_portada'] = $request->file('imagen_portada')->store('blog', 'public');
+            }
+            // Secundarias
+            if ($request->hasFile('imagen_secundaria1')) {
+                $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
+            }
+            if ($request->hasFile('imagen_secundaria2')) {
+                $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
+            }
+            if ($request->hasFile('imagen_secundaria3')) {
+                $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
+            }
+
+            BlogArticulo::create($data);
+
+            return redirect()->route('otramajoadmin.blog.index')->with('ok', 'Artículo creado correctamente.');
+        });
     }
+
 
     public function edit($id)
     {
@@ -90,12 +99,7 @@ class AdminBlogArticuloController extends Controller
             'conclusion'        => ['nullable', 'string'],
             'fecha_publicacion' => ['required', 'date'],
             'estado'            => ['required', 'in:publicado,borrador'],
-            'orden_articulos'   => [
-                'nullable',
-                'integer',
-                'min:1',
-                Rule::unique('blog_articulos', 'orden_articulos')->ignore($articulo->id),
-            ],
+            'orden_articulos'   => ['nullable', 'integer', 'min:1'], // <- sin unique
             'imagen_portada'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'imagen_secundaria1'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'imagen_secundaria2'   => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
@@ -106,70 +110,118 @@ class AdminBlogArticuloController extends Controller
             'limpiar_imagen_secundaria3'    => ['nullable', 'boolean'],
         ]);
 
-        /* -------- PORTADA -------- */
-        if ($request->boolean('limpiar_imagen')) {
-            if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
-                Storage::disk('public')->delete($articulo->imagen_portada);
-            }
-            $data['imagen_portada'] = null;
-        } elseif ($request->hasFile('imagen_portada')) {
-            if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
-                Storage::disk('public')->delete($articulo->imagen_portada);
-            }
-            $data['imagen_portada'] = $request->file('imagen_portada')->store('blog', 'public');
-        } else {
-            unset($data['imagen_portada']);
-        }
+        return DB::transaction(function () use ($request, $articulo, $data) {
 
-        /* -------- SECUNDARIA 1 -------- */
-        if ($request->boolean('limpiar_imagen_secundaria1')) {
-            if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria1);
-            }
-            $data['imagen_secundaria1'] = null;
-        } elseif ($request->hasFile('imagen_secundaria1')) {
-            if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria1);
-            }
-            $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
-        } else {
-            unset($data['imagen_secundaria1']);
-        }
+            $oldOrden = $articulo->orden_articulos ? (int)$articulo->orden_articulos : null;
+            $newOrden = !empty($data['orden_articulos']) ? (int)$data['orden_articulos'] : null;
 
-        /* -------- SECUNDARIA 2 -------- */
-        if ($request->boolean('limpiar_imagen_secundaria2')) {
-            if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria2);
-            }
-            $data['imagen_secundaria2'] = null;
-        } elseif ($request->hasFile('imagen_secundaria2')) {
-            if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria2);
-            }
-            $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
-        } else {
-            unset($data['imagen_secundaria2']);
-        }
+            // --- REORDENAMIENTO ---
+            if ($newOrden !== $oldOrden) {
 
-        /* -------- SECUNDARIA 3 -------- */
-        if ($request->boolean('limpiar_imagen_secundaria3')) {
-            if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria3);
-            }
-            $data['imagen_secundaria3'] = null;
-        } elseif ($request->hasFile('imagen_secundaria3')) {
-            if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
-                Storage::disk('public')->delete($articulo->imagen_secundaria3);
-            }
-            $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
-        } else {
-            unset($data['imagen_secundaria3']);
-        }
+                // Caso: antes no tenía orden y ahora sí -> insertar
+                if ($oldOrden === null && $newOrden !== null) {
+                    BlogArticulo::whereNotNull('orden_articulos')
+                        ->where('orden_articulos', '>=', $newOrden)
+                        ->lockForUpdate()
+                        ->increment('orden_articulos', 1);
+                }
 
-        $articulo->update($data);
+                // Caso: antes tenía orden y ahora queda null -> cerrar hueco
+                if ($oldOrden !== null && $newOrden === null) {
+                    BlogArticulo::whereNotNull('orden_articulos')
+                        ->where('id', '!=', $articulo->id)
+                        ->where('orden_articulos', '>', $oldOrden)
+                        ->lockForUpdate()
+                        ->decrement('orden_articulos', 1);
+                }
 
-        return redirect()->route('otramajoadmin.blog.index')->with('ok', 'Artículo actualizado.');
+                // Caso: tenía orden y cambia a otra posición
+                if ($oldOrden !== null && $newOrden !== null) {
+
+                    if ($newOrden < $oldOrden) {
+                        // Se mueve hacia arriba: los del rango [newOrden .. oldOrden-1] suben +1
+                        BlogArticulo::whereNotNull('orden_articulos')
+                            ->where('id', '!=', $articulo->id)
+                            ->whereBetween('orden_articulos', [$newOrden, $oldOrden - 1])
+                            ->lockForUpdate()
+                            ->increment('orden_articulos', 1);
+                    } else {
+                        // Se mueve hacia abajo: los del rango [oldOrden+1 .. newOrden] bajan -1
+                        BlogArticulo::whereNotNull('orden_articulos')
+                            ->where('id', '!=', $articulo->id)
+                            ->whereBetween('orden_articulos', [$oldOrden + 1, $newOrden])
+                            ->lockForUpdate()
+                            ->decrement('orden_articulos', 1);
+                    }
+                }
+            }
+
+            /* -------- PORTADA -------- */
+            if ($request->boolean('limpiar_imagen')) {
+                if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
+                    Storage::disk('public')->delete($articulo->imagen_portada);
+                }
+                $data['imagen_portada'] = null;
+            } elseif ($request->hasFile('imagen_portada')) {
+                if ($articulo->imagen_portada && Storage::disk('public')->exists($articulo->imagen_portada)) {
+                    Storage::disk('public')->delete($articulo->imagen_portada);
+                }
+                $data['imagen_portada'] = $request->file('imagen_portada')->store('blog', 'public');
+            } else {
+                unset($data['imagen_portada']);
+            }
+
+            /* -------- SECUNDARIA 1 -------- */
+            if ($request->boolean('limpiar_imagen_secundaria1')) {
+                if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria1);
+                }
+                $data['imagen_secundaria1'] = null;
+            } elseif ($request->hasFile('imagen_secundaria1')) {
+                if ($articulo->imagen_secundaria1 && Storage::disk('public')->exists($articulo->imagen_secundaria1)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria1);
+                }
+                $data['imagen_secundaria1'] = $request->file('imagen_secundaria1')->store('blog', 'public');
+            } else {
+                unset($data['imagen_secundaria1']);
+            }
+
+            /* -------- SECUNDARIA 2 -------- */
+            if ($request->boolean('limpiar_imagen_secundaria2')) {
+                if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria2);
+                }
+                $data['imagen_secundaria2'] = null;
+            } elseif ($request->hasFile('imagen_secundaria2')) {
+                if ($articulo->imagen_secundaria2 && Storage::disk('public')->exists($articulo->imagen_secundaria2)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria2);
+                }
+                $data['imagen_secundaria2'] = $request->file('imagen_secundaria2')->store('blog', 'public');
+            } else {
+                unset($data['imagen_secundaria2']);
+            }
+
+            /* -------- SECUNDARIA 3 -------- */
+            if ($request->boolean('limpiar_imagen_secundaria3')) {
+                if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria3);
+                }
+                $data['imagen_secundaria3'] = null;
+            } elseif ($request->hasFile('imagen_secundaria3')) {
+                if ($articulo->imagen_secundaria3 && Storage::disk('public')->exists($articulo->imagen_secundaria3)) {
+                    Storage::disk('public')->delete($articulo->imagen_secundaria3);
+                }
+                $data['imagen_secundaria3'] = $request->file('imagen_secundaria3')->store('blog', 'public');
+            } else {
+                unset($data['imagen_secundaria3']);
+            }
+
+            $articulo->update($data);
+
+            return redirect()->route('otramajoadmin.blog.index')->with('ok', 'Artículo actualizado.');
+        });
     }
+
 
     public function destroy($id)
     {

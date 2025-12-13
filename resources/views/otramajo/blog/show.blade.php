@@ -260,6 +260,22 @@
             word-break: break-word;
         }
 
+        /* ✅ (mínimo) Mejoras de formato HTML en descripción y conclusión */
+        .highlight-text p,
+        .highlight-text ul,
+        .highlight-text ol,
+        .conclusion p,
+        .conclusion ul,
+        .conclusion ol {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .highlight-text a,
+        .conclusion a {
+            text-decoration: underline;
+        }
+
         /* Inputs comentarios */
         .om-input,
         .om-textarea {
@@ -368,7 +384,8 @@
                             <article class="article-body prose max-w-none">
                                 @if ($articulo->descripcion)
                                     <div class="highlight-text">
-                                        {{ $articulo->descripcion }}
+                                        {{-- ✅ mostrar HTML con formato (CKEditor) --}}
+                                        {!! $articulo->descripcion !!}
                                     </div>
                                 @endif
 
@@ -392,7 +409,9 @@
                                 {{-- Conclusión --}}
                                 @if ($articulo->conclusion)
                                     <div class="conclusion">
-                                        <strong>Cierre:</strong> {{ $articulo->conclusion }}
+                                        <strong>Cierre:</strong>
+                                        {{-- ✅ mostrar HTML con formato (CKEditor) --}}
+                                        {!! $articulo->conclusion !!}
                                     </div>
                                 @endif
 
