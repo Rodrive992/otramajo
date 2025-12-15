@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogArticuloController;
-use App\Http\Controllers\OtraMajoAuthController;
-use App\Http\Controllers\OtraMajoAdminController;
+use App\Http\Controllers\VideosController;
+use App\Http\Controllers\OtramaJoAuthController;
+use App\Http\Controllers\OtramaJoAdminController;
 use App\Http\Controllers\AdminBlogArticuloController;
+use App\Http\Controllers\AdminVideoController;
 use App\Http\Controllers\BlogComentarioController;
 
 Route::get('/', function () {
@@ -17,18 +19,25 @@ Route::get('Sobre-mi', function () {
 
 Route::redirect('/Blog', '/blog')->name('Blog');
 
-// Listado público
-Route::get('/blog', [BlogArticuloController::class, 'index'])->name('blog.index');
+// ---------------- PUBLIC ----------------
 
-// Detalle público (por id). Si luego le agregamos slug, lo cambiamos.
+// Blog
+Route::get('/blog', [BlogArticuloController::class, 'index'])->name('blog.index');
 Route::get('/blog/{articulo}', [BlogArticuloController::class, 'show'])
     ->whereNumber('articulo')
     ->name('blog.show');
 
-// Guardar comentario
 Route::post('/blog/{articulo}/comentar', [BlogComentarioController::class, 'store'])
     ->whereNumber('articulo')
     ->name('blog.comentar');
+
+// Videos (public)
+// Landing con descripción + botones
+Route::get('/videos', [VideosController::class, 'index'])->name('videos');
+
+// Listados por tipo (cards con miniaturas)
+Route::get('/videos/ejercicios', [VideosController::class, 'ejercicios'])->name('videos.ejercicios');
+Route::get('/videos/viajes', [VideosController::class, 'viajes'])->name('videos.viajes');
 
 // ---------- Auth (solo para OtramaJoAdmin) ----------
 Route::get('/otramajoadmin/login', [OtramaJoAuthController::class, 'showLogin'])
@@ -49,13 +58,21 @@ Route::get('/otramajoadmin', function () {
 Route::prefix('otramajoadmin')->middleware('auth')->group(function () {
     Route::get('/index', [OtramaJoAdminController::class, 'index'])->name('otramajoadmin.index');
 
-    // Secciones (solo Blog funcional, resto a #)
+    // Blog
     Route::get('/blog',         [AdminBlogArticuloController::class, 'index'])->name('otramajoadmin.blog.index');
     Route::get('/blog/crear',   [AdminBlogArticuloController::class, 'create'])->name('otramajoadmin.blog.create');
     Route::post('/blog',        [AdminBlogArticuloController::class, 'store'])->name('otramajoadmin.blog.store');
     Route::get('/blog/{id}/editar', [AdminBlogArticuloController::class, 'edit'])->name('otramajoadmin.blog.edit');
     Route::put('/blog/{id}',    [AdminBlogArticuloController::class, 'update'])->name('otramajoadmin.blog.update');
     Route::delete('/blog/{id}', [AdminBlogArticuloController::class, 'destroy'])->name('otramajoadmin.blog.destroy');
-    Route::get('/blog/{id}', function ($id) { return redirect()->route('otramajoadmin.blog.edit', $id);
-    })->name('otramajoadmin.blog.show');
+    Route::get('/blog/{id}', function ($id) { return redirect()->route('otramajoadmin.blog.edit', $id); })
+        ->name('otramajoadmin.blog.show');
+
+    // Videos (Admin)
+    Route::get('/videos',         [AdminVideoController::class, 'index'])->name('otramajoadmin.videos.index');
+    Route::get('/videos/crear',   [AdminVideoController::class, 'create'])->name('otramajoadmin.videos.create');
+    Route::post('/videos',        [AdminVideoController::class, 'store'])->name('otramajoadmin.videos.store');
+    Route::get('/videos/{id}/editar', [AdminVideoController::class, 'edit'])->name('otramajoadmin.videos.edit');
+    Route::put('/videos/{id}',    [AdminVideoController::class, 'update'])->name('otramajoadmin.videos.update');
+    Route::delete('/videos/{id}', [AdminVideoController::class, 'destroy'])->name('otramajoadmin.videos.destroy');
 });

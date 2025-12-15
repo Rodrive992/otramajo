@@ -168,7 +168,7 @@
                    
                     <li><a href="{{ route('Sobre-mi')}}" class="om-link">Sobre mi</a></li>
                     <li><a href="{{ route('Blog')}}" class="om-link">Blog personal</a></li>
-                    <li><a href="#" class="om-link">Videos</a></li>
+                    <li><a href="{{ route('videos')}}" class="om-link">Videos</a></li>
                     <li><a href="#" class="om-link">Noticias</a></li>
                     <li><a href="#" class="om-link">Preguntas frecuentes</a></li>
                     <li><a href="#" class="om-link">Encuestas</a></li>
@@ -199,7 +199,7 @@
             
             <a href="{{ route('Sobre-mi')}}" class="mobile-menu-link">Sobre mi</a>
             <a href="{{ route('Blog')}}" class="mobile-menu-link">Blog personal</a>
-            <a href="#" class="mobile-menu-link">Videos</a>
+            <a href="{{ route('videos') }}" class="mobile-menu-link">Videos</a>
             <a href="#" class="mobile-menu-link">Noticias</a>
             <a href="#" class="mobile-menu-link">Preguntas frecuentes</a>
             <a href="#" class="mobile-menu-link">Encuestas</a>

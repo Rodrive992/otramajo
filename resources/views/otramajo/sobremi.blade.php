@@ -299,7 +299,7 @@
                                     <p class="text-sm opacity-80">Educación Superior</p>
                                 </div>
                                 <div class="timeline-item">
-                                    <h5 class="font-semibold">Licenciatura en Ciencias de la Educación Superior</h5>
+                                    <h5 class="font-semibold">Licenciatura en Gestión de la Educación Superior</h5>
                                     <p class="mt-2">En este camino nació mi vocación por la docencia</p>
                                 </div>
                                 <div class="timeline-item">
