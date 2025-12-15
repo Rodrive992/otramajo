@@ -11,26 +11,16 @@ class OtramaJoAuthController extends Controller
     {
         return view('otramajoadmin.login');
     }
-
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required','email'],
-            'password' => ['required','string'],
-        ]);
-
+        $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string'],]);
         $remember = $request->boolean('remember');
-
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
             return redirect()->intended(route('otramajoadmin.index'));
         }
-
-        return back()->withErrors([
-            'email' => 'Credenciales inválidas.',
-        ])->onlyInput('email');
+        return back()->withErrors(['email' => 'Credenciales inválidas.',])->onlyInput('email');
     }
-
     public function logout(Request $request)
     {
         Auth::logout();
