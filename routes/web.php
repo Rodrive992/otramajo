@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogArticuloController;
 use App\Http\Controllers\VideosController;
-use App\Http\Controllers\OtramaJoAuthController;
-use App\Http\Controllers\OtramaJoAdminController;
+use App\Http\Controllers\OtraMaJoAuthController;
+use App\Http\Controllers\OtraMaJoAdminController;
 use App\Http\Controllers\AdminBlogArticuloController;
 use App\Http\Controllers\AdminVideoController;
 use App\Http\Controllers\BlogComentarioController;
@@ -40,11 +40,11 @@ Route::get('/videos/ejercicios', [VideosController::class, 'ejercicios'])->name(
 Route::get('/videos/viajes', [VideosController::class, 'viajes'])->name('videos.viajes');
 
 // ---------- Auth (solo para OtramaJoAdmin) ----------
-Route::get('/otramajoadmin/login', [OtramaJoAuthController::class, 'showLogin'])
+Route::get('/otramajoadmin/login', [OtraMaJoAuthController::class, 'showLogin'])
     ->middleware('guest')->name('otramajoadmin.login');
-Route::post('/otramajoadmin/login', [OtramaJoAuthController::class, 'login'])
+Route::post('/otramajoadmin/login', [OtraMaJoAuthController::class, 'login'])
     ->middleware('guest')->name('otramajoadmin.login.post');
-Route::post('/otramajoadmin/logout', [OtramaJoAuthController::class, 'logout'])
+Route::post('/otramajoadmin/logout', [OtraMaJoAuthController::class, 'logout'])
     ->middleware('auth')->name('otramajoadmin.logout');
 
 // ---------- Redirección base ----------
@@ -56,7 +56,7 @@ Route::get('/otramajoadmin', function () {
 
 // ---------- Zona protegida ----------
 Route::prefix('otramajoadmin')->middleware('auth')->group(function () {
-    Route::get('/index', [OtramaJoAdminController::class, 'index'])->name('otramajoadmin.index');
+    Route::get('/index', [OtraMaJoAdminController::class, 'index'])->name('otramajoadmin.index');
 
     // Blog
     Route::get('/blog',         [AdminBlogArticuloController::class, 'index'])->name('otramajoadmin.blog.index');
