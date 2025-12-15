@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class OtraMaJoAdminController extends Controller
+class OtraMajoAdminController extends Controller
 {
     public function index()
     {
